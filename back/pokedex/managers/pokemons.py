@@ -125,7 +125,7 @@ def load_all_pokemons_from_api(abilities, types):
 
 def search_pokemons(query, type):
     query = query.lower()
-    pokemons = Pokemon.select().where(Pokemon.name.contains(query)).limit(20)
+    pokemons = Pokemon.select().where(Pokemon.name.contains(query)).limit(10)
 
     if type is not None:
         filtered_pokemons = []

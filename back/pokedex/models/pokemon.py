@@ -25,6 +25,7 @@ class Pokemon(Model):
         return {'hp': self.hp, 'special_attack': self.special_attack, 'defense': self.defense, 'attack': self.attack,
                 'special_defense': self.special_defense}
 
+
     def get_types_name(self):
         names = []
         for pokemon_type in self.types:
