@@ -55,3 +55,4 @@ $ npm run serve
 
 In this project, Pycharm is already configured with the right database and the right run configurations : the backend and
 the frontend ones.
+# pokedex
