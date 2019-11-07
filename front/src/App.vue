@@ -51,15 +51,26 @@
             </v-slide-x-transition>
 
             <v-btn icon>
-                <v-icon @click="searchAvailable = !searchAvailable">mdi-magnify</v-icon>
+                <v-icon @click="searchAvailable = !searchAvailable" title="search">mdi-magnify</v-icon>
             </v-btn>
 
             <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
+                    <v-badge
+          :bottom="bottom"
+          :color="color"
+          :left="left"
+          :overlap="overlap"
+          class="align-self-center"
+        >
+                           <template v-slot:badge>
+            <span>{{nblike}}</span>
+                           </template>
+                <v-icon title="like" @click="nblike++">mdi-heart</v-icon>
+                    </v-badge>
             </v-btn>
 
             <v-btn icon>
-                <v-icon>mdi-dots-vertical</v-icon>
+                <v-icon title="more">mdi-dots-vertical</v-icon>
             </v-btn>
 
             <template v-slot:extension>
@@ -76,8 +87,11 @@
 
         <v-content>
             <v-container>
+
                 <pokemon-list :search="search"></pokemon-list>
+
             </v-container>
+
         </v-content>
     </v-app>
 </template>
@@ -93,6 +107,7 @@
         data: () => ({
             searchAvailable: false,
             search: null,
+             nblike:0,
         })
     };
 </script>

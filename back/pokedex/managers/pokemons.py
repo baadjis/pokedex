@@ -1,22 +1,12 @@
 import requests
+from playhouse.shortcuts import update_model_from_dict
 
-from pokedex.models.pokemon import Pokemon, Ability, PokemonAbilities, Type, PokemonTypes
+from pokedex.models.pokemon import Pokemon, Ability, PokemonAbilities, Type, PokemonTypes,PokemonForm
 
 
 def get_pokemon_by_name(name):
     pokemon = Pokemon.get_or_none(name=name)
     return pokemon
-
-
-def get_pokemons_by_hp(min_hp):
-    results = []
-
-    pokemons = Pokemon.select()
-    for pokemon in pokemons:
-        if pokemon.hp >= min_hp:
-            results.append(pokemon)
-
-    return results
 
 
 def create_pokemon(name, hp, special_attack, defense, attack, special_defense, speed):
@@ -26,8 +16,6 @@ def create_pokemon(name, hp, special_attack, defense, attack, special_defense, s
     pokemon = Pokemon.get_or_none(name=name)
     if pokemon is None:
         pokemon = Pokemon.create(name=name, **stats)
-    else:
-        pokemon.update(**stats).execute()
 
     return pokemon
 
@@ -47,10 +35,13 @@ def load_pokemon_from_api(name):
     sprite_back = pokemon_data['sprites']['back_default']
 
     pokemon = Pokemon.get_or_none(name=name)
+    data = {'sprite_front': sprite_front, 'sprite_back': sprite_back, **stats}
     if pokemon is None:
-        pokemon = Pokemon.create(name=name, sprite_front=sprite_front, sprite_back=sprite_back, **stats)
+        pokemon = Pokemon.create(name=name, **data)
     else:
-        pokemon.update(**stats).execute()
+        update_model_from_dict(pokemon, data)
+        pokemon.save()
+
     return pokemon
 
 
@@ -66,9 +57,6 @@ def load_pokemon_types_from_api(name):
         type_name = api_type['type']['name']
 
         type = Type.get_or_none(name=type_name)
-        if type is None:
-            type = Type.create(name=type_name, url=api_type['type']['url'])
-
         pokemon_type = PokemonTypes.create(pokemon=pokemon, type=type, slot=api_type['slot'])
 
         types.append(pokemon_type)
@@ -88,9 +76,6 @@ def load_pokemon_abilities_from_api(name):
         ability_name = api_ability['ability']['name']
 
         ability = Ability.get_or_none(name=ability_name)
-        if ability is None:
-            ability = Ability.create(name=ability_name, url=api_ability['ability']['url'])
-
         pokemon_ability = PokemonAbilities.create(pokemon=pokemon, ability=ability,
                                                   is_hidden=api_ability['is_hidden'],
                                                   slot=api_ability['slot'])
@@ -100,7 +85,7 @@ def load_pokemon_abilities_from_api(name):
     return abilities
 
 
-def load_all_pokemons_from_api(abilities, types):
+def load_all_pokemons_from_api():
     i = 0
 
     next_page = 'https://pokeapi.co/api/v2/pokemon/'
@@ -112,22 +97,26 @@ def load_all_pokemons_from_api(abilities, types):
 
         for pokemon in pokemons_data['results']:
             load_pokemon_from_api(pokemon['name'])
-            if abilities:
-                load_pokemon_abilities_from_api(pokemon['name'])
-            if types:
-                load_pokemon_types_from_api(pokemon['name'])
+            load_pokemon_abilities_from_api(pokemon['name'])
+            load_pokemon_types_from_api(pokemon['name'])
             i += 1
 
         print(f'{i} pokemons loaded.')
 
     return i
 
+def get_pokemon_form(pokemon):
 
-def search_pokemons(query, type):
-    query = query.lower()
-    pokemons = Pokemon.select().where(Pokemon.name.contains(query)).limit(10)
+    forms=PokemonForm.select().where(PokemonForm.pokemon == pokemon)
+    return [form.name  for form in forms]
 
-    if type is not None:
+
+def search_pokemons(query=None, type=None,limit=100):
+    pokemons = Pokemon.select()
+    if query is not None:
+      query = query.lower()
+      pokemons = Pokemon.select().where(Pokemon.name.contains(query))
+    if type is not None and (len(type)>0):
         filtered_pokemons = []
         for pokemon in pokemons:
             # types = [t.type.name for t in pokemon.types]
@@ -139,20 +128,12 @@ def search_pokemons(query, type):
 
             if type in types:
                 filtered_pokemons.append(pokemon)
-        return filtered_pokemons
+        return filtered_pokemons[:limit] if len(filtered_pokemons) >limit else filtered_pokemons
 
-    return pokemons
+    return pokemons[:limit] if  len(pokemons) >limit else pokemons
 
 
 def edit_pokemon_stats(name, stat, new_value):
-    """
-    Edit stats of a pokemon
-    
-    :param name:
-    :param stat:
-    :param new_value:
-    :return:
-    """
     pokemon = get_pokemon_by_name(name)
 
     update = {stat: new_value}
@@ -161,15 +142,14 @@ def edit_pokemon_stats(name, stat, new_value):
     return pokemon
 
 
-def edit_pokemon_hp(name, new_hp):
-    pokemon = get_pokemon_by_name(name)
-    pokemon.hp = new_hp
-    pokemon.save()
-
-    return pokemon
-
-
 def delete_pokemon(name):
     pokemon = get_pokemon_by_name(name)
     pokemon.delete_instance(recursive=True)
     return True
+def get_moyenne():
+    pokemons=Pokemon.select()
+    stats=[pokemon.stats for pokemon in pokemons]
+    moyenne={}
+    for key in stats[0].keys():
+        moyenne[key]= sum(float(d[key]) for d in stats) / len(stats)
+    return moyenne

@@ -28,6 +28,9 @@
         watch: {
             search() {
                 this.searchPokemons();
+            },
+            next() {
+                //
             }
         },
         created() {
@@ -43,6 +46,8 @@
                 let params = {query: search};
                 axios.get('http://localhost:8000/api/v1/pokemons', {params: params}).then((response) => {
                     this.pokemons = response.data;
+                    this.pokemons.sort((a,b)=>{return(a.name > b.name)})
+
                 });
             },
             updatePokemon(pokemon) {

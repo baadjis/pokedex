@@ -104,11 +104,18 @@
             editPokemon() {
                 axios.patch('http://localhost:8000/api/v1/pokemon/' + this.pokemon.name, this.pokemon_edited).then(() => {
                     this.$emit('update');
+                    this.edit=false
+
                 });
+
+
+
+
             },
             deletePokemon() {
                 axios.delete('http://localhost:8000/api/v1/pokemon/' + this.pokemon.name).then(() => {
                     this.$emit('delete');
+
                 });
             }
         }
