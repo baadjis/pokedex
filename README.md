@@ -34,6 +34,8 @@ $ cd back/
 $ source venv/bin/activate
 (venv) $ python run.py
 ```
+#####API RESOURCES
+####### Pokemons
 
 #### Front-end
 

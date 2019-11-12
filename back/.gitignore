@@ -125,3 +125,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+./home/cnd/pokedex/back/GeoLite2-City_20191022
