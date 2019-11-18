@@ -5,3 +5,4 @@ from . import pokemons
 from . import forms
 from . import species
 from . import analytics
+from .import scrapping
