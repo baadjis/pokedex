@@ -50,14 +50,14 @@ def get_pokemons():
 
 
 def load_pokemons_from_wiki():
-     """this function load  pokemons from the wikipedia table and
+    """this function load  pokemons from the wikipedia table and
      and create a table in  scrapping schemas
      """
-     pokemons = get_pokemons()
-     Pokemon.delete().execute()
-     for pokemon in pokemons:
-         Pokemon.create(numero=pokemon["numero"],name=pokemon["name"],generation=pokemon["generation"],symbol=pokemon["symbol"].strip())
-
+    pokemons = get_pokemons()
+    Pokemon.delete().execute()
+    for pokemon in pokemons:
+        Pokemon.create(numero=pokemon["numero"], name=pokemon["name"], generation=pokemon["generation"],
+                       symbol=pokemon["symbol"].strip())
 
 
 def get_generation(id):
@@ -211,14 +211,18 @@ def load_generations_from_wiki():
         Generation.create(name=generation["name"], years=generation["years"], titles=generation["titles"],
                           remakes=generation["remakes"], platforms=generation["platforms"],
                           newpokemons=generation["newpokemons"], total=generation["total"])
+
+
 def get_pokemons_from_db():
-    pokemons= Pokemon.select()
-    return [model_to_dict(pokemon) for pokemon  in pokemons]
+    pokemons = Pokemon.select()
+    return [model_to_dict(pokemon) for pokemon in pokemons]
+
 
 def get_generations_from_db():
-    generations= Generation.select()
+    generations = Generation.select()
     return [model_to_dict(generation) for generation in generations]
 
+
 def get_symbols_from_db():
-    symbols= Symbol.select()
+    symbols = Symbol.select()
     return [model_to_dict(symbol) for symbol in symbols]
