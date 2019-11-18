@@ -59,28 +59,10 @@ def load_pokemons_from_wiki():
         Pokemon.create(numero=pokemon["numero"], name=pokemon["name"], generation=pokemon["generation"],
                        symbol=pokemon["symbol"].strip())
 
-
-def get_generation(id):
-    id = int(id)
-    if id <= 151:
-        return "Generation I"
-    elif id <= 251:
-        return "Generation II"
-    elif id <= 386:
-        return "Generation III"
-    elif id <= 483:
-        return "Generation IV"
-    elif id <= 649:
-        return "Generation V"
-    elif id <= 721:
-        return "Generation VI"
-    elif id <= 809:
-        return "Generation VII"
-    else:
-        return "Generation VIII"
-
-
 def get_image(td):
+    """get the image within a node
+    :parameter td could be a  td but also any tag
+    """
     img = []
     try:
         img = td.findall('.//img')
@@ -91,6 +73,9 @@ def get_image(td):
 
 
 def get_text(td):
+    """get the text within a node
+    :parameter td could be a  td but also any tag
+    """
     text = " "
     try:
         text = td.text_content()
@@ -100,6 +85,9 @@ def get_text(td):
 
 
 def get_text_or_image(td):
+    """use  this function if we don't know   we will get a image or text
+    :parameter td could be a  td but also any tag
+    """
     img = get_image(td)
 
     if img:
@@ -108,6 +96,9 @@ def get_text_or_image(td):
 
 
 def clean_text(td):
+    """strip  all line ending symbols from the text
+    :parameter td could be a  td but also any tag
+    """
     if td and td != "":
         clean = td.strip('\n')
         return clean
@@ -165,6 +156,9 @@ def get_generations():
 
 
 def get_color(td):
+    """get the background color of td
+    :parameter td could be a  td but also any tag
+    """
     style = td.get('style')
     return style.split(":")[1].strip(';')
 
