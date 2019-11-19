@@ -1,7 +1,6 @@
 import requests
-from playhouse.shortcuts import model_to_dict
 
-from pokedex.models.pokemon import Ability, Generation, AbilityEffects, VerboseEffect, Language, PokemonAbilities
+from pokedex.models.pokemon import Ability, Generation, AbilityEffects, VerboseEffect, Language
 
 
 def load_ability_from_api(name):
@@ -71,7 +70,7 @@ def search_abilities(query=None, limits=None, offset=None):
 
 def get_ability_effects(ability_id):
     """ get the  ability effect if given the ability id
-    :parameter abylity_id  :the ability id
+    :parameter ability_id  :the ability id
     """
     effects = (VerboseEffect.select(VerboseEffect.effect)
                .join(AbilityEffects)
