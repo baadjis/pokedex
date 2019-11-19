@@ -53,6 +53,10 @@ def load_abilities_from_api():
 
 
 def search_abilities(query=None, limits=None, offset=None):
+    """:return abilities containing  query
+     :parameter limits limit the number of abilities
+     :parameter offset the offset"""
+
     if limits == None:
         limits = 10
     if offset == None:
