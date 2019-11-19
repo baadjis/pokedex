@@ -1,6 +1,8 @@
 from flask import request
 from flask_restful import Resource
 
+from pokedex.errors import TypeNotFoundError
+
 from pokedex.managers.types import get_types, get_pokemons_from_type, add_type
 
 
@@ -8,7 +10,8 @@ class Types(Resource):
     def get(self):
         pokemons = request.args.get('pokemons', 'false') == 'true'
         types = get_types()
-
+        if types is None:
+            raise TypeNotFoundError
         result = []
         for type in types:
             type_result = type.get_small_data()
@@ -25,6 +28,9 @@ class Types(Resource):
 
     def put(self):
         name = request.json['name']
+
         generation_name = request.json['generation']
+
         new_type = add_type(name, generation_name)
+
         return new_type.get_small_data()

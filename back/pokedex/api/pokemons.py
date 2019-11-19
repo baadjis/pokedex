@@ -1,5 +1,7 @@
 from flask import request
 from flask_restful import Resource
+
+from pokedex.errors import PokemonNotFoundError
 from pokedex.managers.analytics import add_pokemon_search_history
 
 from pokedex.managers.pokemons import search_pokemons, get_pokemon_by_name, create_pokemon, delete_pokemon,get_pokemon_form ,get_moyenne
@@ -31,9 +33,9 @@ class Pokemons(Resource):
 class Pokemon(Resource):
     def get(self, pokemon_name):
         pokemon = get_pokemon_by_name(pokemon_name)
-        forms=bool(request.args["forms"])
         if pokemon is None:
-            return {'msg': 'Not found'}, 404
+          raise PokemonNotFoundError(pokemon_name)
+        forms=bool(request.args["forms"])
         if forms == True:
             return {"stats":pokemon.get_small_data(),"forms":get_pokemon_form(pokemon)}
         return pokemon.get_small_data()
